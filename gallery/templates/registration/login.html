@@ -1,10 +1,163 @@
 <!doctype html>
-<html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <style>
+      :root {
+        --primary: #ff6b6b;
+        --bg: #f8f9fa;
+        --card-bg: #ffffff;
+        --text: #333;
+      }
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+      .login-card {
+        background: var(--card-bg);
+        padding: 3rem;
+        border-radius: 12px;
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        max-width: 400px;
+        width: 100%;
+        border-top: 5px solid var(--primary);
+      }
+      .login-card h1 {
+        color: var(--primary);
+        text-align: center;
+        margin-top: 0;
+        font-size: 1.8rem;
+      }
+      .login-card p {
+        text-align: center;
+        color: #999;
+        margin-bottom: 2rem;
+      }
+      .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        margin-top: 0.5rem;
+        margin-bottom: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        box-sizing: border-box;
+        font-size: 1rem;
+      }
+      label {
+        font-weight: 500;
+        color: var(--text);
+      }
+      .btn-submit {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 6px;
+        font-size: 1rem;
+        cursor: pointer;
+        width: 100%;
+        transition: background 0.2s;
+      }
+      .btn-submit:hover {
+        background: #fa5252;
+      }
+      .errors {
+        color: #ff6b6b;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+        background: #fff0f0;
+        padding: 0.75rem;
+        border-radius: 6px;
+        border-left: 3px solid #ff6b6b;
+      }
+      .password-wrapper {
+        position: relative;
+        margin-bottom: 1rem;
+      }
+      .password-wrapper .form-control {
+        margin-bottom: 0;
+        padding-right: 3rem;
+      }
+      .toggle-pw {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #999;
+        font-size: 1.1rem;
+        padding: 0;
+      }
+      .toggle-pw:hover {
+        color: var(--primary);
+      }
+    </style>
+  </head>
   <body>
-    <h2>Login</h2>
-    <form method="post">
-      {% csrf_token %} {{ form.as_p }}
-      <button type="submit">Login</button>
-    </form>
+    <div class="login-card">
+      <h1>Recipe Asset Manager</h1>
+      <p>Sign in to manage your gallery</p>
+
+      {% if form.errors %}
+      <div class="errors">Invalid username or password. Please try again.</div>
+      {% endif %}
+
+      <form method="POST">
+        {% csrf_token %}
+        <label for="id_username">Username</label>
+        <input
+          type="text"
+          name="username"
+          id="id_username"
+          class="form-control"
+          autofocus
+        />
+
+        <label for="id_password">Password</label>
+        <div class="password-wrapper">
+          <input
+            type="password"
+            name="password"
+            id="id_password"
+            class="form-control"
+          />
+          <button
+            type="button"
+            class="toggle-pw"
+            onclick="togglePassword()"
+            title="Show/hide password"
+          >
+            👁
+          </button>
+        </div>
+
+        <input type="hidden" name="next" value="{{ next }}" />
+        <button type="submit" class="btn-submit">Login</button>
+      </form>
+    </div>
+
+    <script>
+      function togglePassword() {
+        const pw = document.getElementById("id_password");
+        const btn = document.querySelector(".toggle-pw");
+        if (pw.type === "password") {
+          pw.type = "text";
+          btn.textContent = "🙈";
+        } else {
+          pw.type = "password";
+          btn.textContent = "👁";
+        }
+      }
+    </script>
   </body>
 </html>
