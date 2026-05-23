@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloudinary Recipe Gallery</title>
+    <style>
+        :root { --primary: #ff6b6b; --bg: #f8f9fa; --card-bg: #ffffff; --text: #333; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 2rem; }
+        
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 3rem; }
+        .header h1 { color: var(--primary); font-size: 2.5rem; margin-bottom: 0.5rem; }
+        
+        /* Form Styling */
+        .upload-section { background: var(--card-bg); padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 3rem; max-width: 600px; margin-left: auto; margin-right: auto; }
+        .form-control { width: 100%; padding: 0.75rem; margin-top: 0.5rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+        .btn-submit { background: var(--primary); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; font-size: 1rem; cursor: pointer; width: 100%; transition: background 0.2s; }
+        .btn-submit:hover { background: #fa5252; }
+
+        /* Gallery Grid */
+        .gallery-grid { 
+            display: flex; 
+            flex-wrap: wrap; 
+            justify-content: center; 
+            gap: 2rem; }
+        .card { background: var(--card-bg); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: transform 0.2s; width: 320px; 
+            flex: 0 0 auto;}
+        .card:hover { transform: translateY(-5px); }
+        
+        /* Cloudinary Image Container */
+        .img-container { width: 100%; height: 250px; background: #eee; }
+        .img-container img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .card-body { padding: 1.5rem; }
+        .card-title { margin: 0 0 0.5rem 0; font-size: 1.25rem; }
+        .card-text { color: #666; font-size: 0.9rem; margin: 0; }
+        .date { font-size: 0.8rem; color: #999; margin-top: 1rem; display: block; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Recipe Asset Manager</h1>
+            <p>Enterprise Grade Image Processing</p>
+        </div>
+
+        <div style="max-width: 600px; margin: 0 auto 2rem auto;">
+            <form method="GET" style="display: flex; gap: 10px;">
+                <input type="text" name="q" value="{{ query }}" placeholder="Search recipes..." class="form-control" style="margin: 0;">
+                <button type="submit" class="btn-submit" style="width: auto;">Search</button>
+                {% if query %}<a href="/" class="btn-submit" style="width: auto; background: #999; text-decoration: none;">Clear</a>{% endif %}
+            </form>
+        </div>
+
+        <div class="upload-section">
+            <h2 style="margin-top: 0;">Upload New Photo</h2>
+            <form method="POST" enctype="multipart/form-data" action="{% url 'create_recipe' %}">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn-submit">Upload Recipe</button>
+            </form>
+        </div>
+
+        <div class="gallery-grid">
+            {% for photo in photos %}
+            <div class="card">
+                <div class="img-container">
+                    <a href="{% url "edit_recipe" photo.pk  %}">
+                        <img src="{{ photo.image.url }}" alt="{{ photo.title }}" style="cursor: pointer; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1">
+                    </a>                    
+                </div>
+
+                <div class="card-body">
+                    <h3 class="card-title">{{ photo.title }}</h3>
+                    <p class="card-text">{{ photo.description|truncatewords:15 }}</p>
+                    <span class="date">Uploaded: {{ photo.uploaded_at|date:"M d, Y" }}</span>
+                    <p style="margin-top: 10px; font-size: 0.8rem; color: var(--primary);">
+                        <em>Click image to edit or delete</em>
+                    </p>
+                </div>
+            </div>
+            {% empty %}
+            <div style="grid-column: 1 / -1; text-align: center; color: #999;">
+                <p>No recipes found.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if photos.has_other_pages %}
+        <div style="text-align: center; margin-top: 3rem;">
+            <span style="background: var(--card-bg); padding: 10px 20px; border-radius: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                {% if photos.has_previous %}
+                    <a href="?page={{ photos.previous_page_number }}{% if query %}&q={{ query }}{% endif %}" style="text-decoration: none; color: var(--primary); font-weight: bold;">&laquo; Previous</a>
+                {% endif %}
+                
+                <span style="margin: 0 15px; color: #666;">Page {{ photos.number }} of {{ photos.paginator.num_pages }}</span>
+                
+                {% if photos.has_next %}
+                    <a href="?page={{ photos.next_page_number }}{% if query %}&q={{ query }}{% endif %}" style="text-decoration: none; color: var(--primary); font-weight: bold;">Next &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

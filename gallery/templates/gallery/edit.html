@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit {{ photo.title }}</title>
+    <!-- You can copy your CSS styles from home.html here, or ideally move them to a base.html file! -->
+    <style>
+      /* Paste your standard root/body/btn styles here for testing */
+      :root {
+        --primary: #ff6b6b;
+        --bg: #f8f9fa;
+        --card-bg: #ffffff;
+        --text: #333;
+      }
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        padding: 2rem;
+      }
+      .upload-section {
+        background: var(--card-bg);
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        max-width: 600px;
+        margin: 0 auto;
+      }
+      .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        margin-top: 0.5rem;
+        margin-bottom: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        box-sizing: border-box;
+      }
+      .btn-submit {
+        background: #f39c12;
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 6px;
+        font-size: 1rem;
+        cursor: pointer;
+        width: 100%;
+        transition: background 0.2s;
+      }
+      .img-preview {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="upload-section">
+      <h2 style="margin-top: 0">Edit Recipe: {{ photo.title }}</h2>
+
+      <!-- Show current image as a reminder -->
+      <p style="margin-bottom: 0.5rem; color: #666">Current Image:</p>
+      <img
+        src="{{ photo.image.url }}"
+        class="img-preview"
+        alt="{{ photo.title }}"
+      />
+
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %} {{ form.as_p }}
+
+        <!-- Side-by-side action buttons -->
+        <div style="display: flex; gap: 15px; margin-top: 1.5rem">
+          <!-- Update Button -->
+          <button type="submit" class="btn-submit" style="flex: 2">
+            Update Recipe
+          </button>
+
+          {% comment %} {% url 'delete_recipe' photo.pk %} {% endcomment %}
+          <!-- Delete Button (Links to your safety net page) -->
+          <a
+            href="{% url 'delete_recipe' photo.pk %}"
+            class="btn-submit"
+            style="
+              flex: 1;
+              text-align: center;
+              background: #ff6b6b;
+              text-decoration: none;
+            "
+          >
+            Delete
+          </a>
+        </div>
+
+        <a
+          href="{% url 'gallery_home' %}"
+          style="
+            display: block;
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #999;
+            text-decoration: none;
+          "
+        >
+          &larr; Back to Gallery
+        </a>
+      </form>
+    </div>
+  </body>
+</html>
